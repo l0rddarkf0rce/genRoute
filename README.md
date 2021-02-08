@@ -26,8 +26,8 @@ To get the original instructions created by BlisseyBuster go to https://www.redd
 
 ### Example
 
-```
-genRoute -i route.txt -o optimized-route.txt
+```python
+python genRoute -i route.txt -o optimized-route.txt
 ```
 
 Hopefully this all works for you!
