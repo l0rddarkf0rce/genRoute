@@ -1,4 +1,4 @@
-# genRoute v2.0
+# genRoute v2.5
 
 I created this to help in generating route paths for different Field Research tasks. I took the great work that BlisseyBuster started and just automated them with python. I wrote it so that it would work on Windows 10 and have tested it only on my system. Hopefully the instructions bellow will help to get this running.
 
