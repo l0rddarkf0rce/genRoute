@@ -1,4 +1,4 @@
-# genRoute v2.5
+# genRoute v2.6
 
 I created this to help in generating route paths for different Field Research tasks. I took the great work that BlisseyBuster started and just automated them with python. I wrote it so that it would work on Windows 10 and have tested it only on my system. Hopefully the instructions bellow will help to get this running.
 
@@ -27,11 +27,12 @@ To get the original instructions created by BlisseyBuster go to https://www.redd
 
 ## Command line parameters
 * -i INPUTFILE. This is the file name that you generated on step 6 above
+* -o OUTFILE. Where do you want the routes to be combined into. Some formatting for Reddit is done to the file.
 
 ### Example
 
 ```python
-python genRoute -i route.txt
+python genRoute -i route.txt -o combinedRoutes.txt
 ```
 
 Hopefully this all works for you!
