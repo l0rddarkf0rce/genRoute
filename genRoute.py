@@ -1,6 +1,6 @@
 ############################################################
 # Program Name:  genRoute.py
-# Version:       2.5
+# Version:       2.6
 # Author:        L0rd DarkF0ce
 # GitHub:        https://github.com/l0rddarkf0rce/genRoute
 ############################################################
@@ -14,6 +14,9 @@
 # 20200210
 #    Added code to calculate and print distance and cool
 #    down times.
+# 20200213
+#    Added code to combine the quests into one single file
+#    and format the file to paste into Reddit.
 ############################################################
 
 import os
@@ -21,9 +24,33 @@ import sys, getopt
 from math import sin, cos, sqrt, atan2, radians
 
 inFile = ''
+outFile = ''
 ERROR1 = 'Invalid number of parameters'
 ERROR2 = 'Invalid parameter provided'
 ERROR3 = 'ERROR: In file ({}) does not exists.'
+ERROR4 = 'ERROR: Out file ({}) already exists.'
+
+def combine(iFile, oFile):
+   '''
+   **Catch 1 Pokemon (Type - Dragon) - 10 Ultra Balls** 
+   * \[1.392315, 103.916264\]
+   * \[1.393947, 103.886417\] distance 3.33 km - cooldown 1.5 min
+   * \[1.313657, 103.785238\] distance 14.38 km - cooldown 8 min
+
+   **Catch 1 Pokemon (Type - Dragon) - 1500 Stardust** 
+
+   * \[1.291691, 103.847889\]
+   * \[1.366582, 103.75204\] distance 13.54 km - cooldown 8 min
+   * \[1.279148, 103.838751\] distance 13.71 km - cooldown 8 min
+   '''
+   with open(iFile, 'r') as f:
+      # do something here
+      lines = f.readlines()
+      title = '**'+iFile[:-4].replace('_', ' ').replace('Gible', 'G.i.b.l.e.')+'**'
+      with open(oFile, 'a') as of:
+         print(title, file=of)
+         for line in lines:
+            print('* {}'.format(line.replace('[', '\[').replace(']', '\]')), file=of)
 
 def coolDown(file):
    coords = []
@@ -77,7 +104,7 @@ def usage(name, msg):
    #    msg: string of the error message that we want to print
    # Description:
    #    Print usage message for our program
-   print('ERROR: {}\n   Usage: {} -i <INPUTFILE>\n'.format(msg, name))
+   print('ERROR: {}\n   Usage: {} -i <INPUTFILE> -o <OUTFILE>\n'.format(msg, name))
 
 def trunc(fn):
    # Parameters:
@@ -138,7 +165,6 @@ def distance(c1, c2):
     
     return(d)
 
-
 def main():
    tmpFile = 'foobar'
    Quests = []
@@ -184,10 +210,12 @@ def main():
             lat = line.split(' ')[1].split('"')[1]
             lon = line.split(' ')[2].split('"')[1]
             print("{},{}".format(lat,lon), file=f)
-      
+
       # Calculate distance
       coolDown(quest[0]+'.out')
 
+      combine(quest[0]+'.out', outFile)
+      
       ret_code = os.system('del '+quest[0]+'.txt '+quest[0]+'.gpx')
       print('{} generated'.format(quest[0]+'.out'))
 
@@ -198,16 +226,21 @@ def filesOK():
       print(ERROR3.format(inFile))
       code = False
 
+   if os.path.isfile(outFile):
+      print(ERROR4.format(outFile))
+      code = False
+
    return code
 
 if __name__ == '__main__':
-   if (len(sys.argv) < 3):
+   if (len(sys.argv) < 5):
       usage(sys.argv[0], ERROR1)
       sys.exit(1)
 
    fCmd = sys.argv
    argList = fCmd[1:]
-   sOptions = 'i:'
+   sOptions = 'i:o:'
+
    try:
       args, vals = getopt.getopt(argList, sOptions)
    except getopt.error as err:
@@ -217,6 +250,8 @@ if __name__ == '__main__':
    for cArg, cVal in args:
       if cArg in ('-i'):
          inFile = cVal
+      elif cArg in ('-o'):
+         outFile = cVal
       else:
          usage(fCmd[0], ERROR2)
 
