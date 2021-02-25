@@ -1,22 +1,27 @@
 ############################################################
 # Program Name:  genRoute.py
-# Version:       2.6
+# Version:       2.7
 # Author:        L0rd DarkF0ce
 # GitHub:        https://github.com/l0rddarkf0rce/genRoute
 ############################################################
 # 20210206
 #    Original program created
 #
-# 20200209
+# 20210209
 #    Added code to create different files for each of the
 #    research tasks.
 #
-# 20200210
+# 20210210
 #    Added code to calculate and print distance and cool
 #    down times.
-# 20200213
+#
+# 20210213
 #    Added code to combine the quests into one single file
 #    and format the file to paste into Reddit.
+#
+# 20210225
+#    Added CD distances > 30 Km. Too keep it simple I am
+#    using ranges for ant distance above 30 Km.
 ############################################################
 
 import os
@@ -31,18 +36,6 @@ ERROR3 = 'ERROR: In file ({}) does not exists.'
 ERROR4 = 'ERROR: Out file ({}) already exists.'
 
 def combine(iFile, oFile):
-   '''
-   **Catch 1 Pokemon (Type - Dragon) - 10 Ultra Balls** 
-   * \[1.392315, 103.916264\]
-   * \[1.393947, 103.886417\] distance 3.33 km - cooldown 1.5 min
-   * \[1.313657, 103.785238\] distance 14.38 km - cooldown 8 min
-
-   **Catch 1 Pokemon (Type - Dragon) - 1500 Stardust** 
-
-   * \[1.291691, 103.847889\]
-   * \[1.366582, 103.75204\] distance 13.54 km - cooldown 8 min
-   * \[1.279148, 103.838751\] distance 13.71 km - cooldown 8 min
-   '''
    with open(iFile, 'r') as f:
       # do something here
       lines = f.readlines()
@@ -84,7 +77,15 @@ def coolDown(file):
          27: '15 min',
          28: '15 min',
          29: '16 min',
-         30: '16 min'}
+         30: '16 min',
+         65: '22 min',
+         81: '25 min',
+         100: '35 min',
+         250: '45 min',
+         500: '1 hr',
+         750: '1 hr 20 min',
+         1000: '1 hr 30 min',
+         1500: '2 hrs'}
 
    with open(file, 'r') as f:
       for line in f.readlines():
@@ -96,7 +97,16 @@ def coolDown(file):
       print(coords[0], file=f)
       for x in range(1, len(coords)):
          dist = distance(coords[x-1],coords[x])
-         print('{} distance {} km - cooldown {}'.format(coords[x], round(dist, 2), cd[round(dist, 0)]), file=f)
+         rDist = round(dist, 0)
+         if rDist in range(31, 66): rDist = 65
+         elif rDist in range(66, 82): rDist = 81
+         elif rDist in range(82, 101): rDist = 100
+         elif rDist in range(101, 251): rDist = 250
+         elif rDist in range(251, 501): rDist = 500
+         elif rDist in range(501, 751): rDist = 750
+         elif rDist in range(751, 1001): rDist = 1000
+         elif rDist > 1000: rDist = 1500
+         print('{} distance {} km - cooldown {}'.format(coords[x], round(dist, 2), cd[rDist]), file=f)
 
 def usage(name, msg):
    # Parameters:
