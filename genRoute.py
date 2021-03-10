@@ -1,6 +1,6 @@
 ############################################################
 # Program Name:  genRoute.py
-# Version:       2.7
+# Version:       2.8
 # Author:        L0rd DarkF0ce
 # GitHub:        https://github.com/l0rddarkf0rce/genRoute
 ############################################################
@@ -22,14 +22,22 @@
 # 20210225
 #    Added CD distances > 30 Km. Too keep it simple I am
 #    using ranges for ant distance above 30 Km.
+#
+# 20210310
+#    Added an option to keep the GPX files if we want to
+#    feed the GPX to our spoofing tool for auto walk.
+#    Also added a sleep for 2 seconds, because I was
+#    running into an issue every now and then where the
+#    script is looking for a file that is not fully
+#    created.
 ############################################################
 
-import os
-import sys, getopt
+import os, sys, getopt, time
 from math import sin, cos, sqrt, atan2, radians
 
 inFile = ''
 outFile = ''
+keepGPX = False
 ERROR1 = 'Invalid number of parameters'
 ERROR2 = 'Invalid parameter provided'
 ERROR3 = 'ERROR: In file ({}) does not exists.'
@@ -222,11 +230,15 @@ def main():
             print("{},{}".format(lat,lon), file=f)
 
       # Calculate distance
+      time.sleep(2)
       coolDown(quest[0]+'.out')
 
       combine(quest[0]+'.out', outFile)
       
-      ret_code = os.system('del '+quest[0]+'.txt '+quest[0]+'.gpx')
+      if keepGPX:
+         ret_code = os.system('del '+quest[0]+'.txt')
+      else:
+         ret_code = os.system('del '+quest[0]+'.txt '+quest[0]+'.gpx')
       print('{} generated'.format(quest[0]+'.out'))
 
 def filesOK():
@@ -262,6 +274,8 @@ if __name__ == '__main__':
          inFile = cVal
       elif cArg in ('-o'):
          outFile = cVal
+      elif cArg in ('-g'):
+         keepGPX = True
       else:
          usage(fCmd[0], ERROR2)
 
